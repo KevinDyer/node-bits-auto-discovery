@@ -1,0 +1,8 @@
+{
+  "name": "node-bits-autoload",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:KevinDyer/node-bits-autoload.git",
+  "author": "Kevin Dyer <kevin.m.dyer@gmail.com>",
+  "license": "MIT"
+}
