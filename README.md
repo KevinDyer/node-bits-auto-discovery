@@ -7,32 +7,38 @@ consumer module must know the consumed module's name and API classes.
 
 AutoDiscovery protocol can be used to de-couple the explicit knowledge of a consumer modules from consumed modules. The protocol has to components; `resource`s and `consumer`s. A `resource` sends an add event to the system when loaded to alert any `consumer` already loaded on the system. A `consumer` sends a query event to the system when loaded. Any `resource` that is currently loaded
 
-
+## How to use a `Resource`
 ``` javascript
-'use strict';
-
 const Messenger = global.helper.Messenger;
 const {Resource} = require('bits-auto-discovery');
 
-const messenger = new Messenger();
-messeger.addRequestListener('random#Get', null, (metadata, {min=0, max=100}) => Promise.resolve(Math.floor(Math.random() * (max - min)) + min));
-
-const resource = new Resource({
-  topic: 'numbers',
-  name: 'Random Integers',
-  request: 'random#Get'
-});
-
-
-module.exports = {
+class ModuleApp {
+  constructor() {
+    this._messenger = new Messenger();
+    this._messeger.addRequestListener('random#Get', null, (metadata, {min=0, max=100}) => {
+      const randomInt = Math.floor(Math.random() * (max - min)) + min;
+      return Promise.resolve(randomInt);
+    });
+    this._resource = new Resource({
+      topic: 'numbers',
+      name: 'Random Integers',
+      request: 'random#Get',
+      event: null
+    });
+  }
 
   load(messageCenter) {
-    return Promise.resolve();
+    return Promise.resolve()
+      .then(() => this._messenger.load(messageCenter))
+      .then(() => this._resource.load(messageCenter));
   }
 
   unload() {
-    return Promise.resolve();
+    return Promise.resolve()
+      .then(() => this._resource.unload())
+      .then(() => this._messenger.unload());
   }
 }
 
+module.exports = new ModuleApp();
 ```
