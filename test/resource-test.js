@@ -21,16 +21,19 @@
       it('should create a Resource', () => {
         expect(new Resource({topic: 'test', name: 'a'})).to.be.instanceof(Resource);
       });
+
       it('should throw TypeError if no topic', () => {
         expect(() => {
           new Resource({name: 'a'});
         }).to.throw('topic must be a non-empty string');
       });
+
       it('should throw TypeError if no name', () => {
         expect(() => {
           new Resource({topic: 'test'});
         }).to.throw('name must be a non-empty string');
       });
+
       it('should not fail if data is passed', () => {
         expect(() => {
           new Resource({topic: 'test', name: 'a', data: null});
@@ -42,9 +45,11 @@
       it('should run', () => {
         return resource.load(messageCenter);
       });
+
       it('should return a Promise', () => {
         expect(resource.load(messageCenter)).to.be.instanceof(Promise);
       });
+
       it('should send resource add event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not sendEvent')), 5);
         messageCenter.on('sendEvent', (event, metadata, {topic, name}) => {
@@ -57,6 +62,7 @@
         });
         resource.load(messageCenter);
       });
+
       it('should send resource add event with data', (done) => {
         const resource = new Resource({topic: 'test', name: 'a', data: 42});
         const timeout = setTimeout(() => done(new Error('did not sendEvent')), 5);
@@ -71,6 +77,7 @@
         });
         resource.load(messageCenter);
       });
+
       it('should add resource query event listener', (done) => {
         const timeout = setTimeout(() => done(new Error('did not addEventListener')), 5);
         messageCenter.on('addEventListener', (event, metadata, callback) => {
@@ -92,9 +99,11 @@
       it('should run', () => {
         return resource.unload();
       });
+
       it('should return a Promise', () => {
         expect(resource.unload()).to.be.instanceof(Promise);
       });
+
       it('should send resource remove event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not sendEvent')), 5);
         messageCenter.on('sendEvent', (event, metadata, {topic, name}) => {
@@ -107,6 +116,7 @@
         });
         resource.unload();
       });
+
       it('should remove resource query event listener', (done) => {
         const timeout = setTimeout(() => done(new Error('did not removeEventListener')), 5);
         messageCenter.on('removeEventListener', (event, callback) => {
