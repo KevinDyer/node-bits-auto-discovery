@@ -4,11 +4,11 @@
   class Resource {
     constructor({topic, name, data}) {
       if ('string' !== typeof(topic) || 0 >= topic.length) {
-        return new TypeError('topic must be a non-empty string');
+        throw new TypeError('topic must be a non-empty string');
       }
       this._topic = topic;
       if ('string' !== typeof(name) || 0 >= name.length) {
-        return new TypeError('name must be a non-empty string');
+        throw new TypeError('name must be a non-empty string');
       }
       this._name = name;
       this._data = data;
@@ -21,7 +21,7 @@
         .then(() => {
           this._messageCenter = messageCenter;
         })
-        .then(() => this._addDiscoveryQueryListener())
+        .then(() => this._addResourceQueryListener())
         .then(() => this._sendResourceAddEvent());
     }
 
@@ -40,11 +40,11 @@
       }
     }
 
-    _addDiscoveryQueryListener() {
+    _addResourceQueryListener() {
       return this._messageCenter.addEventListener('auto-discovery#Query', null, this._boundOnQuery);
     }
 
-    _removeDiscoveryQueryListener() {
+    _removeResourceQueryListener() {
       return this._messageCenter.removeEventListener('auto-discovery#Query', this._boundOnQuery);
     }
 

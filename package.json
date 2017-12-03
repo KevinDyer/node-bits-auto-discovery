@@ -5,15 +5,15 @@
   "repository": "git@github.com:KevinDyer/node-bits-auto-discovery.git",
   "author": "Kevin Dyer <kevin.m.dyer@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "eslint": "^4.12.1",
-    "mocha": "^4.0.1"
-  },
   "scripts": {
     "lint": "eslint --fix .",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive",
+    "build": "npm run lint && npm run test"
   },
   "devDependencies": {
-    "eslint-config-google": "^0.9.1"
+    "chai": "^4.1.2",
+    "eslint": "^4.12.1",
+    "eslint-config-google": "^0.9.1",
+    "mocha": "^4.0.1"
   }
 }
