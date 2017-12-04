@@ -34,9 +34,10 @@
       });
     }
 
-    _onQuery(metadata, {topic}) {
+    _onQuery(metadata, {topic, queryId}) {
       if (this._topic === topic) {
-        this._sendResourceAddEvent();
+        const data = {topic: this._topic, queryId: queryId, name: this._name, data: this._data};
+        return this._messageCenter.sendEvent('auto-discovery#QueryResponse', null, data);
       }
     }
 

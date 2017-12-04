@@ -2,14 +2,14 @@
   'use strict';
 
   const chai = require('chai');
-  const {ResourceManager} = require('..');
+  const {Resource, ResourceManager} = require('..');
   const MockMessageCenter = require('./mocks/mock-message-center');
   const expect = chai.expect;
 
   describe('ResourceManager', () => {
     let resourceManager = null;
     beforeEach('Create resourceManager', () => {
-      resourceManager = new ResourceManager({topic: 'test'});
+      resourceManager = new ResourceManager({topic: 'test', delay: 0});
     });
 
     let messageCenter = null;
@@ -72,12 +72,14 @@
     });
 
     describe('unload', () => {
-      beforeEach('Load resource', () => {
-        return resourceManager.load(messageCenter);
-      });
+      beforeEach('Load resource', () => resourceManager.load(messageCenter));
 
       it('should run', () => {
-        return resourceManager.unload();
+        return resourceManager.unload(); return Promise.resolve()
+          .then(() => resourceManager.getResources())
+          .then((resources) => {
+            expect(resources).to.be.an(Array).that.includes();
+          });
       });
 
       it('should return a Promise', () => {
@@ -112,6 +114,54 @@
         Promise.resolve()
         .then(() => resourceManager.unload())
         .catch(done);
+      });
+    });
+
+    describe('getResources', () => {
+      beforeEach('Load resource manager', () => resourceManager.load(messageCenter));
+
+      it('should return a Promise', () => {
+        expect(resourceManager.getResources()).to.be.instanceof(Promise);
+      });
+
+      it('should send resource query event', (done) => {
+        const timeout = setTimeout(() => done(new Error('did not send event')), 5);
+        messageCenter.on('sendEvent', (event, metadata, {topic}) => {
+          if ('auto-discovery#Query' === event) {
+            clearTimeout(timeout);
+            expect(metadata).to.be.null;
+            expect(topic).to.equal('test');
+            done();
+          }
+        });
+
+        Promise.resolve()
+          .then(() => resourceManager.getResources())
+          .catch(done);
+      });
+
+      it('should include resource with same topic', () => {
+        const resource = new Resource({topic: 'test', name: 'a'});
+        return Promise.resolve()
+          .then(() => resource.load(messageCenter))
+          .then(() => resourceManager.getResources())
+          .then((resources) => {
+            expect(resources).to.be.an('array');
+            expect(resources).to.have.lengthOf(1);
+            const {name} = resources[0];
+            expect(name).to.equal('a');
+          });
+      });
+
+      it('should not include resource with another topic', () => {
+        const resource = new Resource({topic: 'not-test', name: 'a'});
+        return Promise.resolve()
+          .then(() => resource.load(messageCenter))
+          .then(() => resourceManager.getResources())
+          .then((resources) => {
+            expect(resources).to.be.an('array');
+            expect(resources).to.be.empty;
+          });
       });
     });
   });

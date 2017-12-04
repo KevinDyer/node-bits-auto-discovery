@@ -134,8 +134,8 @@
       Promise.resolve()
         .then(() => resource.load(messageCenter))
         .then(() => {
-          messageCenter.on('sendEvent', (event, metadata, {topic, name}) => {
-            if ('auto-discovery#Add' === event) {
+          messageCenter.on('sendEvent', (event, metadata, {topic, queryId, name}) => {
+            if ('auto-discovery#QueryResponse' === event && 1 === queryId) {
               clearTimeout(timeout);
               expect(metadata).to.be.null;
               expect(topic).to.equal('test');
@@ -144,7 +144,7 @@
             }
           });
         })
-        .then(() => messageCenter.sendEvent('auto-discovery#Query', null, {topic: 'test'}))
+        .then(() => messageCenter.sendEvent('auto-discovery#Query', null, {topic: 'test', queryId: 1}))
         .catch(done);
     });
 
@@ -154,8 +154,8 @@
       Promise.resolve()
         .then(() => resource.load(messageCenter))
         .then(() => {
-          messageCenter.on('sendEvent', (event, metadata, {topic, name, data}) => {
-            if ('auto-discovery#Add' === event) {
+          messageCenter.on('sendEvent', (event, metadata, {topic, queryId, name, data}) => {
+            if ('auto-discovery#QueryResponse' === event && 1 === queryId) {
               clearTimeout(timeout);
               expect(metadata).to.be.null;
               expect(topic).to.equal('test');
@@ -165,7 +165,7 @@
             }
           });
         })
-        .then(() => messageCenter.sendEvent('auto-discovery#Query', null, {topic: 'test'}))
+        .then(() => messageCenter.sendEvent('auto-discovery#Query', null, {topic: 'test', queryId: 1}))
         .catch(done);
     });
 
