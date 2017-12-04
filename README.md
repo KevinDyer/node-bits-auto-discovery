@@ -1,42 +1,32 @@
-# node-bits-autoload
-A BITS library to help auto discovery capabilities. A BITS module can have hard
-dependencies (the consumer module explicitly calls out in the consumed module
-in the consumer's `module.json`) or soft dependencies (the consumer module uses
-`LazyLoad` to be notified when the consumed module loads). In either case the
-consumer module must know the consumed module's name and API classes.
+# node-bits-autodiscovery
+A BITS library to facilitate auto discovery of resources. A BITS module can have hard dependencies (the consumer module explicitly calls out in the consumed module in the consumer's `module.json`) or soft dependencies (the consumer module uses `LazyLoad` to be notified when the consumed module loads). In either case the consumer module must know the consumed module's name and API classes.
 
-AutoDiscovery protocol can be used to de-couple the explicit knowledge of a consumer modules from consumed modules. The protocol has to components; `resource`s and `consumer`s. A `resource` sends an add event to the system when loaded to alert any `consumer` already loaded on the system. A `consumer` sends a query event to the system when loaded. Any `resource` that is currently loaded
+Auto discovery protocol can be used to de-couple the explicit knowledge of a consumer modules from consumed modules. The protocol uses events to notify when resources become available and unavailable. The `ResourceManager` can be used to get a list of currently available resources and listen for when resources become available and unavailable. The `Resource` class can be used to notify the system a resource is available.
 
 ## How to use a `Resource`
 ``` javascript
-const Messenger = global.helper.Messenger;
-const {Resource} = require('bits-auto-discovery');
+const {Resource} = require('@bits/bits-auto-discovery');
 
 class ModuleApp {
   constructor() {
-    this._messenger = new Messenger();
-    this._messeger.addRequestListener('random#Get', null, (metadata, {min=0, max=100}) => {
-      const randomInt = Math.floor(Math.random() * (max - min)) + min;
-      return Promise.resolve(randomInt);
-    });
     this._resource = new Resource({
       topic: 'numbers',
       name: 'Random Integers',
-      request: 'random#Get',
-      event: null
+      data: {
+        getRequest: 'my-app#Get',
+        updateEvent: 'my-app#Update'
+      },
     });
   }
 
   load(messageCenter) {
     return Promise.resolve()
-      .then(() => this._messenger.load(messageCenter))
       .then(() => this._resource.load(messageCenter));
   }
 
   unload() {
     return Promise.resolve()
-      .then(() => this._resource.unload())
-      .then(() => this._messenger.unload());
+      .then(() => this._resource.unload());
   }
 }
 
