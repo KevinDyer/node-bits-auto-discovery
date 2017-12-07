@@ -1,13 +1,13 @@
 (() => {
   'use strict';
 
-  // const {ResourceManager} = require('..');
+  // const {RemoteResource} = require('..');
   // const chai = require('chai');
   // const MockMessageCenter = require('./mocks/mock-message-center');
 
   // const expect = chai.expect;
 
-  describe.skip('ResourceManager', () => {
+  describe.skip('RemoteResource', () => {
     // let messageCenter = null;
     beforeEach('Create message center', () => {
       // messageCenter = new MockMessageCenter();
@@ -25,15 +25,7 @@
 
     });
 
-    describe('Event \'add\'', () => {
-
-    });
-
-    describe('Event \'remove\'', () => {
-
-    });
-
-    describe('query', () => {
+    describe('getValue', () => {
 
     });
   });

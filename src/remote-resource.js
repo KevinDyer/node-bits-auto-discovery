@@ -3,7 +3,7 @@
 
   const EventEmitter = require('events');
 
-  class ResourceManager extends EventEmitter {
+  class RemoteResource extends EventEmitter {
     constructor() {
       super();
     }
@@ -14,9 +14,9 @@
     unload() {
     }
 
-    query() {
+    getValue() {
     }
   }
 
-  module.exports = ResourceManager;
+  module.exports = RemoteResource;
 })();
