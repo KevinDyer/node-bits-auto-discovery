@@ -53,6 +53,21 @@
         expect(promise).to.be.instanceof(Promise);
         promise.catch(() => null);
       });
+
+      it('should send add event', (done) => {
+        const timeout = setTimeout(() => done(new Error('did not send event')), 5);
+
+        messageCenter.on('sendEvent', (event, metadata, {topic}) => {
+          if ('bits#AutoDiscovery#Add' === event) {
+            clearTimeout(timeout);
+            expect(metadata).to.be.null;
+            expect(topic).to.equal('test');
+            done();
+          }
+        });
+
+        localResource.load(messageCenter);
+      });
     });
 
     describe('unload', () => {
@@ -64,6 +79,21 @@
         const promise = localResource.unload();
         expect(promise).to.be.instanceof(Promise);
         promise.catch(() => null);
+      });
+
+      it('should send remove event', (done) => {
+        const timeout = setTimeout(() => done(new Error('did not send event')), 5);
+
+        messageCenter.on('sendEvent', (event, metadata, {topic}) => {
+          if ('bits#AutoDiscovery#Remove' === event) {
+            clearTimeout(timeout);
+            expect(metadata).to.be.null;
+            expect(topic).to.equal('test');
+            done();
+          }
+        });
+
+        localResource.unload();
       });
     });
 
@@ -81,7 +111,7 @@
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic, uuid, value}) => {
-          if ('auto-discovery#Value' === event) {
+          if ('bits#AutoDiscovery#Value' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
             expect(topic).to.equal('test');
@@ -98,7 +128,7 @@
         const timeout = setTimeout(done, 5);
 
         messageCenter.on('sendEvent', (event) => {
-          if ('auto-discovery#Value' === event) {
+          if ('bits#AutoDiscovery#Value' === event) {
             clearTimeout(timeout);
             done(new Error('did send event'));
           }
@@ -121,7 +151,7 @@
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic, uuid, value}) => {
-          if ('auto-discovery#Value' === event) {
+          if ('bits#AutoDiscovery#Value' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
             expect(topic).to.equal('test');
@@ -132,7 +162,7 @@
         });
 
         const data = {};
-        messageCenter.sendEvent('auto-discovery#Query', null, data);
+        messageCenter.sendEvent('bits#AutoDiscovery#Query', null, data);
       });
     });
   });

@@ -29,12 +29,16 @@
 
     load(messageCenter) {
       this._messageCenter = messageCenter;
-      this._messageCenter.addEventListener('auto-discovery#Query', null, this._boundOnQuery);
+      this._messageCenter.addEventListener('bits#AutoDiscovery#Query', null, this._boundOnQuery);
+      const data = {topic: this._topic, uuid: this._uuid, value: this._value};
+      this._messageCenter.sendEvent('bits#AutoDiscovery#Add', null, data);
       return Promise.resolve();
     }
 
     unload() {
-      this._messageCenter.removeEventListener('auto-discovery#Query', this._boundOnQuery);
+      const data = {topic: this._topic, uuid: this._uuid};
+      this._messageCenter.sendEvent('bits#AutoDiscovery#Remove', null, data);
+      this._messageCenter.removeEventListener('bits#AutoDiscovery#Query', this._boundOnQuery);
       this._messageCenter = null;
       return Promise.resolve();
     }
@@ -61,8 +65,10 @@
     }
 
     _sendValue() {
-      const data = {topic: this._topic, uuid: this._uuid, value: this._value};
-      this._messageCenter.sendEvent('auto-discovery#Value', null, data);
+      if (null !== this._messageCenter) {
+        const data = {topic: this._topic, uuid: this._uuid, value: this._value};
+        this._messageCenter.sendEvent('bits#AutoDiscovery#Value', null, data);
+      }
     }
   }
 
