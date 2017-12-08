@@ -54,11 +54,11 @@
         promise.catch(() => null);
       });
 
-      it('should send add event', (done) => {
+      it('should send pong event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic}) => {
-          if ('bits#AutoDiscovery#Add' === event) {
+          if ('bits#AutoDiscovery#Pong' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
             expect(topic).to.equal('test');
@@ -107,11 +107,11 @@
         expect(localResource.getValue()).to.equal(42);
       });
 
-      it('should send value event', (done) => {
+      it('should send pong event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic, uuid, value}) => {
-          if ('bits#AutoDiscovery#Value' === event) {
+          if ('bits#AutoDiscovery#Pong' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
             expect(topic).to.equal('test');
@@ -124,11 +124,11 @@
         localResource.setValue(42);
       });
 
-      it('should not send value event if value is the same', (done) => {
+      it('should not send pong event if value is the same', (done) => {
         const timeout = setTimeout(done, 5);
 
         messageCenter.on('sendEvent', (event) => {
-          if ('bits#AutoDiscovery#Value' === event) {
+          if ('bits#AutoDiscovery#Pong' === event) {
             clearTimeout(timeout);
             done(new Error('did send event'));
           }
@@ -147,11 +147,11 @@
         localResource.setValue(42);
       });
 
-      it('should send value event on a query event', (done) => {
+      it('should send pong event on a ping event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic, uuid, value}) => {
-          if ('bits#AutoDiscovery#Value' === event) {
+          if ('bits#AutoDiscovery#Pong' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
             expect(topic).to.equal('test');
@@ -162,7 +162,7 @@
         });
 
         const data = {};
-        messageCenter.sendEvent('bits#AutoDiscovery#Query', null, data);
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, data);
       });
     });
   });

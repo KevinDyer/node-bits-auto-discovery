@@ -19,28 +19,30 @@
       }
       this._uuid = uuid;
       this._value = value;
+      this._boundOnPing = this._onPing.bind(this);
       this._messageCenter = null;
-      this._boundOnQuery = this._onQuery.bind(this);
     }
 
-    _onQuery() {
-      this._sendValue();
+    _onPing() {
+      this._sendPong();
     }
 
     load(messageCenter) {
-      this._messageCenter = messageCenter;
-      this._messageCenter.addEventListener('bits#AutoDiscovery#Query', null, this._boundOnQuery);
-      const data = {topic: this._topic, uuid: this._uuid, value: this._value};
-      this._messageCenter.sendEvent('bits#AutoDiscovery#Add', null, data);
-      return Promise.resolve();
+      return Promise.resolve()
+        .then(() => {
+          this._messageCenter = messageCenter;
+        })
+        .then(() => this._messageCenter.addEventListener('bits#AutoDiscovery#Ping', null, this._boundOnPing))
+        .then(() => this._sendPong());
     }
 
     unload() {
-      const data = {topic: this._topic, uuid: this._uuid};
-      this._messageCenter.sendEvent('bits#AutoDiscovery#Remove', null, data);
-      this._messageCenter.removeEventListener('bits#AutoDiscovery#Query', this._boundOnQuery);
-      this._messageCenter = null;
-      return Promise.resolve();
+      return Promise.resolve()
+        .then(() => this._messageCenter.removeEventListener('bits#AutoDiscovery#Ping', this._boundOnPing))
+        .then(() => this._messageCenter.sendEvent('bits#AutoDiscovery#Remove', null, {topic: this._topic, uuid: this._uuid}))
+        .then(() => {
+          this._messageCenter = null;
+        });
     }
 
     getTopic() {
@@ -61,13 +63,13 @@
         return;
       }
       this._value = value;
-      this._sendValue();
+      this._sendPong();
     }
 
-    _sendValue() {
+    _sendPong() {
       if (null !== this._messageCenter) {
         const data = {topic: this._topic, uuid: this._uuid, value: this._value};
-        this._messageCenter.sendEvent('bits#AutoDiscovery#Value', null, data);
+        this._messageCenter.sendEvent('bits#AutoDiscovery#Pong', null, data);
       }
     }
   }
