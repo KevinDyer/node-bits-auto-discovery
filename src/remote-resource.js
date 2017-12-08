@@ -2,19 +2,45 @@
   'use strict';
 
   const EventEmitter = require('events');
+  const {isNonEmptyString} = require('./utils');
 
   class RemoteResource extends EventEmitter {
-    constructor() {
+    static verify(data) {
+      return true;
+    }
+
+    constructor({topic, uuid, value=null}={}) {
       super();
+      if (!isNonEmptyString(topic)) {
+        throw new TypeError('topic must be a non-empty string');
+      }
+      this._topic = topic;
+      if (!isNonEmptyString(uuid)) {
+        throw new TypeError('uuid must be a non-empty string');
+      }
+      this._uuid = uuid;
+      this._value = value;
     }
 
-    load(messageCenter) {
+    getTopic() {
+      return this._topic;
     }
 
-    unload() {
+    getUuid() {
+      return this._uuid;
     }
 
     getValue() {
+      return this._value;
+    }
+
+    setValue(value) {
+      const oldValue = this.getValue();
+      if (oldValue === value) {
+        return;
+      }
+      this._value = value;
+      this.emit('value', this.getValue());
     }
   }
 

@@ -1,32 +1,66 @@
 (() => {
   'use strict';
 
-  // const {RemoteResource} = require('..');
-  // const chai = require('chai');
-  // const MockMessageCenter = require('./mocks/mock-message-center');
+  const {RemoteResource} = require('..');
+  const chai = require('chai');
 
-  // const expect = chai.expect;
+  const expect = chai.expect;
 
-  describe.skip('RemoteResource', () => {
-    // let messageCenter = null;
-    beforeEach('Create message center', () => {
-      // messageCenter = new MockMessageCenter();
-    });
-
+  describe('RemoteResource', () => {
     describe('constructor', () => {
+      it('should throw TypeError if topic is not a string', () => {
+        expect(() => {
+          return new RemoteResource({});
+        }).to.throw(TypeError, /topic/);
+      });
 
+      it('should throw TypeError if uuid is not a string', () => {
+        expect(() => {
+          return new RemoteResource({topic: 'test', uuid: 42});
+        }).to.throw(TypeError, /uuid/);
+      });
+
+      it('should use the passed in UUID', () => {
+        const removeResource = new RemoteResource({topic: 'test', uuid: 'my-uuid'});
+        expect(removeResource.getUuid()).to.equal('my-uuid');
+      });
+
+      it('should use the passed in value', () => {
+        const removeResource = new RemoteResource({topic: 'test', uuid: 'my-uuid', value: 'my-value'});
+        expect(removeResource.getValue()).to.equal('my-value');
+      });
     });
 
-    describe('load', () => {
+    describe('setValue', () => {
+      let remoteResource = null;
+      beforeEach('Create remote resource', () => {
+        remoteResource = new RemoteResource({topic: 'test', uuid: 'my-uuid'});
+      });
 
-    });
+      it('should set the value', () => {
+        remoteResource.setValue(42);
+        expect(remoteResource.getValue()).to.equal(42);
+      });
 
-    describe('unload', () => {
+      it('should emit value event', (done) => {
+        const timeout = setTimeout(() => done(new Error('did not emit event')), 5);
+        remoteResource.on('value', (value) => {
+          clearTimeout(timeout);
+          expect(value).to.equal(42);
+          done();
+        });
+        remoteResource.setValue(42);
+      });
 
-    });
-
-    describe('getValue', () => {
-
+      it('should not emit value event if value is the same', (done) => {
+        remoteResource.setValue(42);
+        const timeout = setTimeout(done, 5);
+        remoteResource.on('value', () => {
+          clearTimeout(timeout);
+          done(new Error('did send event'));
+        });
+        remoteResource.setValue(42);
+      });
     });
   });
 })();
