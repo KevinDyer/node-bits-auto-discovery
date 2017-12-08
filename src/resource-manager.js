@@ -4,13 +4,13 @@
 
   const EventEmitter = require('events');
   const RemoteResource = require('./remote-resource');
-  const {isNonNullObject} = require('./utils');
+  const {isNonEmptyString, isNonNullObject} = require('./utils');
 
   class ResourceManager extends EventEmitter {
     constructor({topic, pingOnLoad=true}) {
       super();
-      if (!(topic instanceof RegExp) && 'string' !== typeof(topic)) {
-        throw new TypeError('topic must be a RegExp or string');
+      if (!isNonEmptyString(topic)) {
+        throw new TypeError('topic must be a non-empty string');
       }
       this._topic = topic;
       this._pingOnLoad = true === pingOnLoad;
@@ -25,8 +25,12 @@
         return;
       }
       const {topic, uuid, value} = data;
-      // TODO: validate topic
-      // TODO: filter topic
+      if (!isNonEmptyString(topic)) {
+        return;
+      }
+      if (!this._isTopicMatch(topic)) {
+        return;
+      }
       // TODO: validate uuid
       if (!this._resources.has(uuid)) {
         const resource = new RemoteResource({topic: topic, uuid: uuid, value: value});
@@ -39,9 +43,13 @@
       if (!isNonNullObject(data)) {
         return;
       }
-      const {uuid} = data;
-      // TODO: validate topic?
-      // TODO: filter topic?
+      const {topic, uuid} = data;
+      if (!isNonEmptyString(topic)) {
+        return;
+      }
+      if (!this._isTopicMatch(topic)) {
+        return;
+      }
       // TODO: validate uuid
       if (!this._resources.has(uuid)) {
         return;
@@ -76,6 +84,14 @@
     ping() {
       const data = {topic: this._topic};
       return this._messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, data);
+    }
+
+    getTopic() {
+       return this._topic;
+    }
+
+    _isTopicMatch(topic) {
+      return this.getTopic() === topic;
     }
   }
 

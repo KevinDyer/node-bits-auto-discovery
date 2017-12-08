@@ -138,7 +138,7 @@
       });
     });
 
-    describe('Event \'value\'', () => {
+    describe('Event \'pong\'', () => {
       beforeEach('Load local resource', () => {
         return localResource.load(messageCenter);
       });
@@ -147,7 +147,7 @@
         localResource.setValue(42);
       });
 
-      it('should send pong event on a ping event', (done) => {
+      it('should send event on a ping event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic, uuid, value}) => {
@@ -161,8 +161,38 @@
           }
         });
 
-        const data = {};
-        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, data);
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: 'test'});
+      });
+
+      it('should not send event if ping topic does not match', (done) => {
+        const timeout = setTimeout(done, 5);
+
+        messageCenter.on('sendEvent', (event) => {
+          if ('bits#AutoDiscovery#Pong' === event) {
+            clearTimeout(timeout);
+            done(new Error('did send event'));
+          }
+        });
+
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: 'not-test'});
+      });
+
+      it.skip('should send event if topic matches ping topic expession', (done) => {
+        const timeout = setTimeout(() => done(new Error('did not send event')), 5);
+
+        messageCenter.on('sendEvent', (event) => {
+          if ('bits#AutoDiscovery#Pong' === event) {
+            clearTimeout(timeout);
+            expect(metadata).to.be.null;
+            expect(topic).to.equal('test');
+            expect(uuid).to.be.a('string');
+            expect(value).to.equal(42);
+            done();
+          }
+        });
+
+        const exp = (new RegExp('es')).toString();
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: exp});
       });
     });
   });

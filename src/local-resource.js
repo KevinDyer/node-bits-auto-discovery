@@ -2,7 +2,7 @@
   'use strict';
 
   const uuidv4 = require('uuid/v4');
-  const {isNonEmptyString} = require('./utils');
+  const {isNonEmptyString, isNonNullObject} = require('./utils');
 
   function createUuid() {
     return uuidv4();
@@ -23,7 +23,17 @@
       this._messageCenter = null;
     }
 
-    _onPing() {
+    _onPing(data) {
+      if (!isNonNullObject(data)) {
+        return;
+      }
+      const {topic} = data;
+      if (!isNonEmptyString(topic)) {
+        return;
+      }
+      if (!this._isTopicMatch(topic)) {
+        return;
+      }
       this._sendPong();
     }
 
@@ -71,6 +81,10 @@
         const data = {topic: this._topic, uuid: this._uuid, value: this._value};
         this._messageCenter.sendEvent('bits#AutoDiscovery#Pong', null, data);
       }
+    }
+
+    _isTopicMatch(topic) {
+      return this.getTopic() === topic;
     }
   }
 

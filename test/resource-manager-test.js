@@ -24,7 +24,7 @@
           new ResourceManager({topic: 'test'});
         }).to.not.throw;
       });
-      it('should accept a topic of type RegExp', () => {
+      it.skip('should accept a topic of type RegExp', () => {
         expect(() => {
           new ResourceManager({topic: new RegExp('test')});
         }).to.not.throw;
@@ -32,25 +32,25 @@
       it('should throw TypeError is topic is not a string or RegExp', () => {
         expect(() => {
           new ResourceManager({});
-        }).to.throw(TypeError, 'topic must be a RegExp or string' );
+        }).to.throw(TypeError, /topic/ );
         expect(() => {
           new ResourceManager({topic: true});
-        }).to.throw(TypeError, 'topic must be a RegExp or string' );
+        }).to.throw(TypeError, /topic/ );
         expect(() => {
           new ResourceManager({topic: 42});
-        }).to.throw(TypeError, 'topic must be a RegExp or string' );
+        }).to.throw(TypeError, /topic/ );
         expect(() => {
           new ResourceManager({topic: {}});
-        }).to.throw(TypeError, 'topic must be a RegExp or string' );
+        }).to.throw(TypeError, /topic/ );
         expect(() => {
           new ResourceManager({topic: []});
-        }).to.throw(TypeError, 'topic must be a RegExp or string' );
+        }).to.throw(TypeError, /topic/ );
         expect(() => {
           new ResourceManager({topic: null});
-        }).to.throw(TypeError, 'topic must be a RegExp or string' );
+        }).to.throw(TypeError, /topic/ );
         expect(() => {
           new ResourceManager({topic: function() {}});
-        }).to.throw(TypeError, 'topic must be a RegExp or string' );
+        }).to.throw(TypeError, /topic/ );
       });
     });
 
@@ -62,7 +62,7 @@
       });
 
       it('should add pong event listener', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not add event listener')), 0);
+        const timeout = setTimeout(() => done(new Error('did not add event listener')), 5);
 
         messageCenter.on('addEventListener', (event, metadata, listener) => {
           if ('bits#AutoDiscovery#Pong' === event) {
@@ -77,7 +77,7 @@
       });
 
       it('should add remove event listener', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not add event listener')), 0);
+        const timeout = setTimeout(() => done(new Error('did not add event listener')), 5);
 
         messageCenter.on('addEventListener', (event, metadata, listener) => {
           if ('bits#AutoDiscovery#Remove' === event) {
@@ -92,7 +92,7 @@
       });
 
       it('should send ping event', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not send event')), 0);
+        const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic}) => {
           if ('bits#AutoDiscovery#Ping' === event) {
@@ -107,7 +107,7 @@
       });
 
       it('should not send ping event if pingOnLoad is false', (done) => {
-        const timeout = setTimeout(done, 0);
+        const timeout = setTimeout(done, 5);
 
         messageCenter.on('sendEvent', (event) => {
           if ('bits#AutoDiscovery#Ping' === event) {
@@ -133,7 +133,7 @@
       });
 
       it('should remove pong event listener', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not remove event listener')), 0);
+        const timeout = setTimeout(() => done(new Error('did not remove event listener')), 5);
 
         messageCenter.on('removeEventListener', (event, listener) => {
           if ('bits#AutoDiscovery#Pong' === event) {
@@ -147,7 +147,7 @@
       });
 
       it('should remove remove event listener', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not remove event listener')), 0);
+        const timeout = setTimeout(() => done(new Error('did not remove event listener')), 5);
 
         messageCenter.on('removeEventListener', (event, listener) => {
           if ('bits#AutoDiscovery#Remove' === event) {
@@ -167,7 +167,7 @@
       });
 
       it('should send ping event', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not send event')), 0);
+        const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
         messageCenter.on('sendEvent', (event, metadata, {topic}) => {
           if ('bits#AutoDiscovery#Ping' === event) {
@@ -188,7 +188,7 @@
       });
 
       it('should emit on pong event', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not emit event')), 0);
+        const timeout = setTimeout(() => done(new Error('did not emit event')), 5);
 
         resourceManager.on('add', (resource) => {
           clearTimeout(timeout);
@@ -204,7 +204,7 @@
       it('should not emit on second pong event', (done) => {
         messageCenter.sendEvent('bits#AutoDiscovery#Pong', null, {topic: 'test', uuid: 'my-uuid'});
 
-        const timeout = setTimeout(done, 0);
+        const timeout = setTimeout(done, 5);
 
         resourceManager.on('add', () => {
           clearTimeout(timeout);
@@ -212,6 +212,17 @@
         });
 
         messageCenter.sendEvent('bits#AutoDiscovery#Pong', null, {topic: 'test', uuid: 'my-uuid'});
+      });
+
+      it('should not emit is pong topic does not match', (done) => {
+        const timeout = setTimeout(done, 5);
+
+        resourceManager.on('add', () => {
+          clearTimeout(timeout);
+          done(new Error('did emit event'));
+        });
+
+        messageCenter.sendEvent('bits#AutoDiscovery#Pong', null, {topic: 'not-test', uuid: 'my-uuid'});
       });
     });
 
@@ -230,7 +241,7 @@
       });
 
       it('should emit on remove event', (done) => {
-        const timeout = setTimeout(() => done(new Error('did not emit event')), 0);
+        const timeout = setTimeout(() => done(new Error('did not emit event')), 5);
 
         resourceManager.on('remove', (resource) => {
           clearTimeout(timeout);
@@ -244,7 +255,7 @@
       });
 
       it('should not emit on remove event for uuid that is not added', (done) => {
-        const timeout = setTimeout(done, 0);
+        const timeout = setTimeout(done, 5);
 
         resourceManager.on('remove', () => {
           clearTimeout(timeout);
