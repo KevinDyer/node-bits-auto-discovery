@@ -6,4 +6,10 @@
   }
 
   module.exports.isNonEmptyString = isNonEmptyString;
+
+  function isNonNullObject(obj) {
+    return 'object' === typeof(obj) && null !== obj;
+  }
+
+  module.exports.isNonNullObject = isNonNullObject;
 })();
