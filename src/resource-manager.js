@@ -32,7 +32,10 @@
         return;
       }
       // TODO: validate uuid
-      if (!this._resources.has(uuid)) {
+      if (this._resources.has(uuid)) {
+        const resource = this._resources.get(uuid);
+        resource.setValue(value);
+      } else {
         const resource = new RemoteResource({topic: topic, uuid: uuid, value: value});
         this._resources.set(uuid, resource);
         this.emit('add', resource);
