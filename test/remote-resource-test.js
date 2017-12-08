@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const {RemoteResource} = require('..');
   const chai = require('chai');
+  const {RemoteResource} = require('..');
 
   const expect = chai.expect;
 

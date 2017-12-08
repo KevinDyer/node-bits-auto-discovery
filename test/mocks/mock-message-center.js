@@ -4,9 +4,9 @@
   const EventEmitter = require('events');
 
   class MockMessageCenter extends EventEmitter {
-    sendEvent(...data) {
-      this.emit('sendEvent', ...data);
-      this.emit(...data);
+    sendEvent(event, metadata, ...data) {
+      this.emit('sendEvent', event, metadata, ...data);
+      this.emit(event, ...data);
       return Promise.resolve();
     }
     addEventListener(event, metadata, listener) {

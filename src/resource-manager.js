@@ -4,6 +4,7 @@
 
   const EventEmitter = require('events');
   const RemoteResource = require('./remote-resource');
+  const {isNonNullObject} = require('./utils');
 
   class ResourceManager extends EventEmitter {
     constructor({topic, pingOnLoad=true}) {
@@ -19,7 +20,11 @@
       this._messageCenter = null;
     }
 
-    _onPong(metadata, {topic, uuid, value}) {
+    _onPong(data) {
+      if (!isNonNullObject(data)) {
+        return;
+      }
+      const {topic, uuid, value} = data;
       // TODO: validate topic
       // TODO: filter topic
       // TODO: validate uuid
@@ -30,7 +35,11 @@
       }
     }
 
-    _onRemove(metadata, {topic, uuid, value}) {
+    _onRemove(data) {
+      if (!isNonNullObject(data)) {
+        return;
+      }
+      const {uuid} = data;
       // TODO: validate topic?
       // TODO: filter topic?
       // TODO: validate uuid

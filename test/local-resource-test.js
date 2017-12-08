@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const {LocalResource} = require('..');
   const chai = require('chai');
+  const {LocalResource} = require('..');
   const MockMessageCenter = require('./mocks/mock-message-center');
 
   const expect = chai.expect;
