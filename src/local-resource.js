@@ -3,6 +3,7 @@
 
   const uuidv4 = require('uuid/v4');
   const {isNonEmptyString, isNonNullObject} = require('./utils');
+  const TopicFilter = require('./topic-filter');
 
   function createUuid() {
     return uuidv4();
@@ -28,10 +29,8 @@
         return;
       }
       const {topic} = data;
-      if (!isNonEmptyString(topic)) {
-        return;
-      }
-      if (!this._isTopicMatch(topic)) {
+      const topicFilter = TopicFilter.fromTopic(topic);
+      if (!topicFilter.isMatch(this._topic)) {
         return;
       }
       this._sendPong();
@@ -81,10 +80,6 @@
         const data = {topic: this._topic, uuid: this._uuid, value: this._value};
         this._messageCenter.sendEvent('bits#AutoDiscovery#Pong', null, data);
       }
-    }
-
-    _isTopicMatch(topic) {
-      return this.getTopic() === topic;
     }
   }
 

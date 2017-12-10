@@ -161,7 +161,7 @@
           }
         });
 
-        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: 'test'});
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: {type: 'string', data: 'test'}});
       });
 
       it('should not send event if ping topic does not match', (done) => {
@@ -174,13 +174,13 @@
           }
         });
 
-        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: 'not-test'});
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: {type: 'string', data: 'not-test'}});
       });
 
-      it.skip('should send event if topic matches ping topic expession', (done) => {
+      it('should send event if topic matches ping topic expession', (done) => {
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
-        messageCenter.on('sendEvent', (event) => {
+        messageCenter.on('sendEvent', (event, metadata, {topic, uuid, value}) => {
           if ('bits#AutoDiscovery#Pong' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
@@ -191,8 +191,7 @@
           }
         });
 
-        const exp = (new RegExp('es')).toString();
-        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: exp});
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: {type: 'regexp', data: 'es'}});
       });
     });
   });

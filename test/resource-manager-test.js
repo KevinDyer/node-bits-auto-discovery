@@ -20,37 +20,24 @@
 
     describe('constructor', () => {
       it('should accept a topic of type string', () => {
-        expect(() => {
-          new ResourceManager({topic: 'test'});
-        }).to.not.throw;
+        expect(new ResourceManager({topic: 'test'})).to.not.throw;
       });
-      it.skip('should accept a topic of type RegExp', () => {
-        expect(() => {
-          new ResourceManager({topic: new RegExp('test')});
-        }).to.not.throw;
+      it('should accept a topic of type RegExp', () => {
+        expect(new ResourceManager({topic: new RegExp('test')})).to.not.throw;
       });
-      it('should throw TypeError is topic is not a string or RegExp', () => {
-        expect(() => {
-          new ResourceManager({});
-        }).to.throw(TypeError, /topic/ );
-        expect(() => {
-          new ResourceManager({topic: true});
-        }).to.throw(TypeError, /topic/ );
-        expect(() => {
-          new ResourceManager({topic: 42});
-        }).to.throw(TypeError, /topic/ );
-        expect(() => {
-          new ResourceManager({topic: {}});
-        }).to.throw(TypeError, /topic/ );
-        expect(() => {
-          new ResourceManager({topic: []});
-        }).to.throw(TypeError, /topic/ );
-        expect(() => {
-          new ResourceManager({topic: null});
-        }).to.throw(TypeError, /topic/ );
-        expect(() => {
-          new ResourceManager({topic: function() {}});
-        }).to.throw(TypeError, /topic/ );
+      it('should throw TypeError if topic is not a string or RegExp', () => {
+        function createWithOptions(options) {
+          return function() {
+            return new ResourceManager(options);
+          };
+        }
+        expect(createWithOptions({})).to.throw('topic must be a string or RegExp');
+        expect(createWithOptions({topic: true})).to.throw('topic must be a string or RegExp');
+        expect(createWithOptions({topic: 42})).to.throw('topic must be a string or RegExp');
+        expect(createWithOptions({topic: {}})).to.throw('topic must be a string or RegExp');
+        expect(createWithOptions({topic: []})).to.throw('topic must be a string or RegExp');
+        expect(createWithOptions({topic: null})).to.throw('topic must be a string or RegExp');
+        expect(createWithOptions({topic: function() {}})).to.throw('topic must be a string or RegExp');
       });
     });
 
@@ -96,9 +83,10 @@
 
         messageCenter.on('sendEvent', (event, metadata, {topic}) => {
           if ('bits#AutoDiscovery#Ping' === event) {
-            clearTimeout(timeout);
             expect(metadata).to.be.null;
-            expect(topic).to.equal('test');
+            expect(topic.type).to.equal('string');
+            expect(topic.data).to.equal('test');
+            clearTimeout(timeout);
             done();
           }
         });
@@ -173,7 +161,8 @@
           if ('bits#AutoDiscovery#Ping' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
-            expect(topic).to.equal('test');
+            expect(topic.type).to.equal('string');
+            expect(topic.data).to.equal('test');
             done();
           }
         });
@@ -193,7 +182,6 @@
         resourceManager.on('add', (resource) => {
           clearTimeout(timeout);
           expect(resource).to.be.instanceof(RemoteResource);
-          expect(resource.getTopic()).to.equal('test');
           expect(resource.getUuid()).to.equal('my-uuid');
           done();
         });
@@ -246,7 +234,6 @@
         resourceManager.on('remove', (resource) => {
           clearTimeout(timeout);
           expect(resource).to.be.instanceof(RemoteResource);
-          expect(resource.getTopic()).to.equal('test');
           expect(resource.getUuid()).to.equal(localResource.getUuid());
           done();
         });
