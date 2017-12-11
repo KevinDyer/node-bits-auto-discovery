@@ -31,13 +31,13 @@
             return new ResourceManager(options);
           };
         }
-        expect(createWithOptions({})).to.throw('topic must be a string or RegExp');
-        expect(createWithOptions({topic: true})).to.throw('topic must be a string or RegExp');
-        expect(createWithOptions({topic: 42})).to.throw('topic must be a string or RegExp');
-        expect(createWithOptions({topic: {}})).to.throw('topic must be a string or RegExp');
-        expect(createWithOptions({topic: []})).to.throw('topic must be a string or RegExp');
-        expect(createWithOptions({topic: null})).to.throw('topic must be a string or RegExp');
-        expect(createWithOptions({topic: function() {}})).to.throw('topic must be a string or RegExp');
+        expect(createWithOptions({})).to.throw('topic must be a non-empty string or RegExp');
+        expect(createWithOptions({topic: true})).to.throw('topic must be a non-empty string or RegExp');
+        expect(createWithOptions({topic: 42})).to.throw('topic must be a non-empty string or RegExp');
+        expect(createWithOptions({topic: {}})).to.throw('topic must be a non-empty string or RegExp');
+        expect(createWithOptions({topic: []})).to.throw('topic must be a non-empty string or RegExp');
+        expect(createWithOptions({topic: null})).to.throw('topic must be a non-empty string or RegExp');
+        expect(createWithOptions({topic: function() {}})).to.throw('topic must be a non-empty string or RegExp');
       });
     });
 
@@ -81,11 +81,9 @@
       it('should send ping event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
-        messageCenter.on('sendEvent', (event, metadata, {topic}) => {
+        messageCenter.on('sendEvent', (event, metadata) => {
           if ('bits#AutoDiscovery#Ping' === event) {
             expect(metadata).to.be.null;
-            expect(topic.type).to.equal('string');
-            expect(topic.data).to.equal('test');
             clearTimeout(timeout);
             done();
           }
@@ -157,12 +155,10 @@
       it('should send ping event', (done) => {
         const timeout = setTimeout(() => done(new Error('did not send event')), 5);
 
-        messageCenter.on('sendEvent', (event, metadata, {topic}) => {
+        messageCenter.on('sendEvent', (event, metadata) => {
           if ('bits#AutoDiscovery#Ping' === event) {
             clearTimeout(timeout);
             expect(metadata).to.be.null;
-            expect(topic.type).to.equal('string');
-            expect(topic.data).to.equal('test');
             done();
           }
         });

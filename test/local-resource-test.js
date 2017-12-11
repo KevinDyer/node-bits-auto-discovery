@@ -191,7 +191,7 @@
           }
         });
 
-        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: {type: 'regexp', data: 'es'}});
+        messageCenter.sendEvent('bits#AutoDiscovery#Ping', null, {topic: {type: 'regex', data: 'es'}});
       });
     });
   });

@@ -4,19 +4,13 @@
 
   const EventEmitter = require('events');
   const RemoteResource = require('./remote-resource');
-  const {isNonEmptyString, isNonNullObject} = require('./utils');
-  const TopicFilter = require('./topic-filter');
+  const {isNonNullObject} = require('./utils');
+  const {TopicFilter} = require('./topic-filter');
 
   class ResourceManager extends EventEmitter {
     constructor({topic, pingOnLoad=true}) {
       super();
-      if (isNonEmptyString(topic)) {
-        this._topicFilter = TopicFilter.fromTopic({type: 'string', data: topic});
-      } else if (topic instanceof RegExp) {
-        this._topicFilter = TopicFilter.fromTopic({type: 'regexp', data: topic});
-      } else {
-        throw new TypeError('topic must be a string or RegExp');
-      }
+      this._topicFilter = TopicFilter.newTopicFilter(topic);
       this._pingOnLoad = true === pingOnLoad;
       this._boundOnPong = this._onPong.bind(this);
       this._boundOnRemove = this._onRemove.bind(this);

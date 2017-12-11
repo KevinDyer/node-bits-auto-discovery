@@ -17,11 +17,16 @@
 
     toJSON() {
       return {
-        type: 'string',
+        type: StringTopicFilter.TYPE,
         data: this._str,
       };
     }
+
+    static get TYPE() {
+      return 'string';
+    }
   }
+  module.exports.StringTopicFilter = StringTopicFilter;
 
   class RegexTopicFilter {
     constructor(re) {
@@ -40,27 +45,42 @@
 
     toJSON() {
       return {
-        type: 'regexp',
-        data: this._str,
+        type: RegexTopicFilter.TYPE,
+        data: this._re.toString(),
       };
     }
+
+    static get TYPE() {
+      return 'regex';
+    }
   }
+  module.exports.RegexTopicFilter = RegexTopicFilter;
 
   class TopicFilter {
-    static fromTopic(topic) {
+    static newTopicFilter(topic) {
+      if (isNonEmptyString(topic)) {
+        return new StringTopicFilter(topic);
+      }
+      if (topic instanceof RegExp) {
+        return new RegexTopicFilter(topic);
+      }
+      throw new TypeError(`topic must be a non-empty string or RegExp`);
+    }
+
+    static fromJSON(topic) {
       if (!isNonNullObject(topic)) {
         throw new TypeError('topic must be a non-null object');
       }
       const {type, data} = topic;
-      if ('string' === type) {
+      if (StringTopicFilter.TYPE === type) {
         return new StringTopicFilter(data);
       }
-      if ('regexp' === type) {
+      if (RegexTopicFilter.TYPE === type) {
         return new RegexTopicFilter(data);
       }
-      throw new TypeError(`unknown topic type: ${type}`);
+      throw new TypeError(`Unknown topic type: ${type}`);
     }
   }
 
-  module.exports = TopicFilter;
+  module.exports.TopicFilter = TopicFilter;
 })();

@@ -3,7 +3,7 @@
 
   const uuidv4 = require('uuid/v4');
   const {isNonEmptyString, isNonNullObject} = require('./utils');
-  const TopicFilter = require('./topic-filter');
+  const {TopicFilter} = require('./topic-filter');
 
   function createUuid() {
     return uuidv4();
@@ -29,7 +29,7 @@
         return;
       }
       const {topic} = data;
-      const topicFilter = TopicFilter.fromTopic(topic);
+      const topicFilter = TopicFilter.fromJSON(topic);
       if (!topicFilter.isMatch(this._topic)) {
         return;
       }
