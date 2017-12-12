@@ -1,6 +1,6 @@
 {
   "name": "@skidder/bits-auto-discovery",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "repository": "git@github.com:KevinDyer/node-bits-auto-discovery.git",
   "author": "Kevin Dyer <kevin.m.dyer@gmail.com>",

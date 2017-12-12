@@ -54,7 +54,7 @@ class ModuleApp {
       .then(() => this._resource.unload());
   }
 
-  _getRandomInt({min=0, max=100}) {
+  _getRandomInt({min=0, max=100}={}) {
     return Math.floor(Math.random() * (max - min) + min);
   }
 }
