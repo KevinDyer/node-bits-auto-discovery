@@ -46,7 +46,7 @@
     toJSON() {
       return {
         type: RegexTopicFilter.TYPE,
-        data: this._re.toString(),
+        data: this._re.source,
       };
     }
 
